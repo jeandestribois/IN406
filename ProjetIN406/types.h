@@ -13,3 +13,13 @@ struct token
 	struct token *suiv;
 };
 typedef struct token* listeToken;
+
+struct tokenBis
+{
+	typeToken_t type;
+	int valeur;
+	char symbole;
+	struct tokenBis *droite;
+	struct tokenBis *gauche;
+};
+typedef struct tokenBis* arbreToken;

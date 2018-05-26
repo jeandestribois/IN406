@@ -1,7 +1,7 @@
 # Test
 
 test: build
-	./eval "54   +  2  +  (  2  *   45  )"
+	./eval 54+  2+  \(  2*45  \)
 
 # Edition de lien
 
