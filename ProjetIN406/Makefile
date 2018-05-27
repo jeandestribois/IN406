@@ -1,12 +1,16 @@
 # Test
 
-test: build
-	./eval 54+  2+  \(  2*45  \)
+test: clean build run
+
+# Execution avec 5 exemple
+
+run:
+	./eval 54+  2+  \(  2*45  \) + 5
 
 # Edition de lien
 
 build: eval.o fonctionsListe.o
-	gcc -Wall eval.o fonctionsListe.o -o eval
+	gcc -Wall eval.o fonctionsListe.o -o eval -g
 
 # Compilation
 

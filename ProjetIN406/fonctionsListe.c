@@ -42,27 +42,34 @@ void afficherListe(listeToken l)
 
 // Pour l'arbreToken
 
-listeToken ajouteElementDroite(listeToken l, typeToken_t type, int valeur, char symbole)
+arbreToken ajouteElementArbre(typeToken_t type, int valeur, char symbole)
 {
-	listeToken ltmp,l2;
-	ltmp=malloc(sizeof(struct token));
-	ltmp->suiv=NULL;
-	ltmp->type=type;
-	ltmp->valeur=valeur;
-	ltmp->symbole=symbole;
-	if(l==NULL) return ltmp;
-	l2=l;
-	while(l->suiv!=NULL) l=l->suiv;
-	l->suiv=ltmp;
-	return l2;
+	arbreToken a;
+	a=malloc(sizeof(struct tokenBis));
+	a->droite=NULL;
+	a->gauche=NULL;
+	a->type=type;
+	a->valeur=valeur;
+	a->symbole=symbole;
+	return a;
 }
 
-listeToken libereMemoireArbre(listeToken l)
+arbreToken libereMemoireArbre(arbreToken a)
 {
-	if(l!=NULL)
+	if(a!=NULL)
 	{
-		l->suiv=libereMemoire(l->suiv);
-		free(l);
+		a->droite=libereMemoireArbre(a->droite);
+		a->gauche=libereMemoireArbre(a->gauche);
+		free(a);
 	}
 	return NULL;
+}
+
+void afficherArbre(arbreToken arbre, int a)
+{
+    for (int i=0; i < a; i++) printf("|___ ");
+	if(arbre->type==ENTIER) printf("[%d]\n",arbre->valeur);
+	else printf("[%c]\n",arbre->symbole);
+    if(arbre->gauche) afficherArbre(arbre->gauche,a+1);
+    if(arbre->droite) afficherArbre(arbre->droite,a+1);
 }

@@ -42,9 +42,9 @@ void estArithmetique(listeToken l)
 {
 	int pileParenthese=0;						// Compte le nombre de parenthese
 	int precOperateur=1;						// Si le token précédent est un operateur (on l'initialise à 1 pour nous permettre de commencer avec une parenthese)
-	int precEntier=0;								// Si le token précédent est un entier
-	int precParentheseFermante=0;		// Si le token précédent est une parenthese fermante
-	int erreur=0;											// Pour retenir les erreurs
+	int precEntier=0;							// Si le token précédent est un entier
+	int precParentheseFermante=0;				// Si le token précédent est une parenthese fermante
+	int erreur=0;								// Pour retenir les erreurs
 
 	while(l!=NULL && !erreur)
 	{
@@ -59,9 +59,10 @@ void estArithmetique(listeToken l)
 		}
 		else if(l->type==OPERATEUR)
 		{
-			if(precEntier)
+			if(!precOperateur)
 			{
 				precOperateur=1;
+				precParentheseFermante=0;
 				precEntier=0;
 			}
 			else erreur=2;
@@ -83,7 +84,7 @@ void estArithmetique(listeToken l)
 		}
 		l=l->suiv;
 	}
-	if(erreur || pileParenthese)
+	if(erreur || pileParenthese || precOperateur)
 	{
 		fprintf(stderr,"Erreur : Ce n'est pas une expression arithmetique reconnu\n");
 		l=libereMemoire(l);
@@ -94,14 +95,66 @@ void estArithmetique(listeToken l)
 
 arbreToken constructionArbre(listeToken l)
 {
+	int stop=0;
+	int compteurParenthese;
 	arbreToken a=NULL;
-	while(l!=NULL)
+	arbreToken arbre=a;
+	while(l!=NULL && !stop)
 	{
-
-
+		if(l->type==ENTIER)
+		{
+			if(l->suiv!=NULL)
+			{
+				if(l->suiv->type==OPERATEUR)
+				{
+					a=malloc(sizeof(struct tokenBis));
+					a->droite=NULL;
+					a->gauche=ajouteElementArbre(ENTIER,l->valeur,'\0');		
+				}
+				else a=ajouteElementArbre(ENTIER,l->valeur,'\0');
+			}
+			else a=ajouteElementArbre(ENTIER,l->valeur,'\0');
+		}
+		else if(l->type==OPERATEUR)
+		{
+			a->type=OPERATEUR;
+			a->symbole=l->type;
+			a->valeur=-1;
+			a=a->droite;
+		}
+		else if(l->type==PARENTHESE)
+		{
+			if(l->symbole=='(')
+			{
+				a=constructionArbre(l->suiv);
+				compteurParenthese=1;
+				while(compteurParenthese)
+				{
+					l=l->suiv;
+					if(l->type==PARENTHESE)
+					{
+						if(l->symbole=='(') compteurParenthese++;
+						else compteurParenthese --;
+					}
+				}
+			}
+			else stop=1;
+		}
 		l=l->suiv;
 	}
-	return a;
+	return arbre;
+}
+
+int calculExpression(arbreToken a)
+{
+	if(a->type==OPERATEUR)
+	{
+		if(a->symbole=='+') return calculExpression(a->gauche)+calculExpression(a->droite);
+		else if(a->symbole=='-') return calculExpression(a->gauche)-calculExpression(a->droite);
+		else if(a->symbole=='*') return calculExpression(a->gauche)*calculExpression(a->droite);
+		else return calculExpression(a->gauche)/calculExpression(a->droite);
+	}
+	return a->valeur;
 }
 
 int main(int argc, char *argv[])
@@ -109,6 +162,7 @@ int main(int argc, char *argv[])
 	if(argc<2)						// On verifie qu'on nous donne bien un argument apres l'executable
 	{
 		fprintf(stderr,"Erreur : mauvais usage de l'executable.\nUsage correct : %s <expression>\n",argv[0]);
+		exit(0);
 	}
 	
 	char s[100]="";
@@ -120,7 +174,12 @@ int main(int argc, char *argv[])
 
 	estArithmetique(l);
 
+	arbreToken arbre=constructionArbre(l);
+
+	afficherArbre(arbre,1);
+
 	l=libereMemoire(l);
+	arbre=libereMemoireArbre(arbre);
 
 	exit(0);
 }
