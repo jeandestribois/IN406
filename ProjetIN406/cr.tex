@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\title{THEORIE DES LANGAGES}
+\author{DESTRIBOIS JEAN et GHERTESCU MARIUS }
+\date{Mai 2018}
+
+\begin{document}
+
+\maketitle
+
+\section{Q..1}
+\text G= (\Sigma, V, S, P) \newline
+\Sigma = \{0,1,2,3,4,5,6,7,8,9,(,),+,-,\times,/ \} \newline
+V = \{S, N, O, nb, opr\}\newline
+P = \{ \newline
+		S \rightarrow  (N)\newline
+		S \rightarrow  N\newline
+		N \rightarrow  nbN\newline
+		N \rightarrow  nbO\newline
+		N \rightarrow  nb\newline
+		O \rightarrow  oprS\newline
+		O)\rightarrow  )O\newline
+\}\newline
+	    nb \rightarrow  [0-9]\newline
+		opr\rightarrow  [+,-,\times,/]\newline
+		}\newline
+\section{Q..3}
+\subsection{DEFINIR  LE LANGAGE}
+\text
+	L= \{[0-9]+ ( (+,-,\times ,/)[0-9]+ )^\ast \}
+\subsection{ALPHABET }
+\Sigma= \{0,1,2,3,4,5,6,7,8,9,(,),+,-,\times ,/ \}
+
+\subsection{AUTOMATE}
+\includegraphics[width=\linewidth]{auromate.png}
+\end{document}

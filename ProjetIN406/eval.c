@@ -97,13 +97,14 @@ arbreToken constructionArbre(listeToken l)
 {
 	int stop=0;
 	int compteurParenthese;
+	listeToken lbis;
 	arbreToken a=NULL;
 	arbreToken arbre=a;
 	while(l!=NULL && !stop)
 	{
 		if(l->type==ENTIER)
 		{
-			if(l->suiv!=NULL)
+			if(l->suiv!=NULL)						// Condition pour prevoire le cas où c'est le dernière élément
 			{
 				if(l->suiv->type==OPERATEUR)
 				{
@@ -115,7 +116,7 @@ arbreToken constructionArbre(listeToken l)
 			}
 			else a=ajouteElementArbre(ENTIER,l->valeur,'\0');
 		}
-		else if(l->type==OPERATEUR)
+		else if(l->type==OPERATEUR)			// Lorsque c'est un opérateur, on le met là où on se trouve et on se deplace vers la droite
 		{
 			a->type=OPERATEUR;
 			a->symbole=l->type;
@@ -126,9 +127,9 @@ arbreToken constructionArbre(listeToken l)
 		{
 			if(l->symbole=='(')
 			{
-				a=constructionArbre(l->suiv);
+				lbis=l;
 				compteurParenthese=1;
-				while(compteurParenthese)
+				while(compteurParenthese)			// Boucle permettant de "traverser" la parenthese
 				{
 					l=l->suiv;
 					if(l->type==PARENTHESE)
@@ -137,8 +138,19 @@ arbreToken constructionArbre(listeToken l)
 						else compteurParenthese --;
 					}
 				}
+				if(l->suiv!=NULL)					// Condition pour prevoire le cas où c'est le dernière élément
+				{
+					if(l->suiv->type==OPERATEUR)
+					{
+						a=malloc(sizeof(struct tokenBis));
+						a->droite=NULL;
+						a->gauche=constructionArbre(lbis->suiv);		
+					}
+					else a=constructionArbre(lbis->suiv);
+				}
+				else a=constructionArbre(lbis->suiv);
 			}
-			else stop=1;
+			else stop=1;					// Si c'est une parenthese fermante, on renvoit l'arbre actuel
 		}
 		l=l->suiv;
 	}
@@ -176,7 +188,10 @@ int main(int argc, char *argv[])
 
 	arbreToken arbre=constructionArbre(l);
 
-	afficherArbre(arbre,1);
+	//afficherArbre(arbre,1);
+
+	int resultat=calculExpression(arbre);
+	printf("Le resultat est : %d\n",resultat);
 
 	l=libereMemoire(l);
 	arbre=libereMemoireArbre(arbre);
